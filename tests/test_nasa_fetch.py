@@ -156,3 +156,58 @@ def test_forbidden_gives_the_authorize_instruction():
     with pytest.raises(SystemExit, match="NASA GESDISC DATA ARCHIVE"):
         fetch_imerg.explain_http_error(Forbidden("403, message='Forbidden'"))
     fetch_imerg.explain_http_error(ValueError("something else"))  # other errors pass through
+
+
+class FakeResponse:
+    def __init__(self, path, url):
+        self.content = open(path, "rb").read()
+        self.status_code = 200
+        self.url = url
+
+    def raise_for_status(self):
+        pass
+
+    def iter_content(self, chunk_size):
+        yield self.content
+
+
+class FakeSession:
+    def __init__(self, by_name):
+        self.by_name = by_name
+        self.headers_seen = []
+
+    def get(self, url, headers, **kwargs):
+        self.headers_seen.append(headers)
+        return FakeResponse(self.by_name[url.rsplit("/", 1)[-1]], url)
+
+
+def test_token_mode_skips_login_and_downloads_with_the_token(tmp_db, fake_earthaccess, tmp_path, monkeypatch):
+    monkeypatch.delenv("EARTHDATA_USERNAME")
+    monkeypatch.delenv("EARTHDATA_PASSWORD")
+    monkeypatch.setenv("EARTHDATA_TOKEN", "test-token")
+    monkeypatch.setattr(fetch_imerg, "DOWNLOAD_DIR", tmp_path / "raw" / "imerg")
+    by_name = {p.name: p for p in tmp_path.glob("*.HDF5")}
+    session = FakeSession(by_name)
+    real = fetch_imerg.download_with_token
+    monkeypatch.setattr(fetch_imerg, "download_with_token", lambda g, f: real(g, f, session=session))
+
+    assert fetch_imerg.fetch(["douala"]) == {"douala": 162}
+    assert "login" not in fake_earthaccess.calls
+    assert session.headers_seen[0] == {"Authorization": "Bearer test-token"}
+    assert not list((tmp_path / "raw" / "imerg").glob("*.part"))
+    fetch_imerg.fetch(["douala"])  # second run: files already there, nothing fetched
+    assert len(session.headers_seen) == 2
+
+
+def test_token_refused_gives_a_clear_message(tmp_path, monkeypatch):
+    monkeypatch.setenv("EARTHDATA_TOKEN", "bad")
+
+    class Redirected(FakeSession):
+        def get(self, url, headers, **kwargs):
+            resp = FakeResponse(next(iter(self.by_name.values())), "https://urs.earthdata.nasa.gov/oauth/authorize")
+            return resp
+
+    path = tmp_path / "x.HDF5"
+    path.write_bytes(b"x")
+    with pytest.raises(SystemExit, match="did not accept EARTHDATA_TOKEN"):
+        fetch_imerg.download_with_token([FakeGranule("a.HDF5")], tmp_path, session=Redirected({"x": path}))

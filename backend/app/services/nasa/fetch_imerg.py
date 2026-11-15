@@ -2,12 +2,12 @@
 
 CLI: python -m app.cli fetch-imerg [--region douala ...] [--start 2001-01] [--end 2024-12] [--limit N]
 
-STATUS: written from the GES DISC file layout but NOT yet run against NASA.
-Task A1 starts with `python -m app.cli inspect-granule` on one granule to confirm
-the group, variable, dimension order and units before running the full fetch.
+STATUS: file layout confirmed on a real granule in task A1 (issue #8).
 
 How it works:
 1. Log in to NASA Earthdata with EARTHDATA_USERNAME / EARTHDATA_PASSWORD from .env.
+   Token mode: if only EARTHDATA_TOKEN is set, there is no login call (the search needs
+   none) and every file is downloaded with the token to data/raw/imerg/ (resumable).
 2. Search GPM_3IMERGM v07 granules over the union bounding box of the requested regions.
 3. Open each granule remotely (earthaccess.open streams byte ranges, so only the
    Cameroon subset is transferred), read Grid/precipitation, keep the 9 x 9 cells of
@@ -55,23 +55,64 @@ def explain_http_error(err: Exception) -> None:
         raise SystemExit(FORBIDDEN_HINT) from err
 
 
+def token_only() -> bool:
+    """True when EARTHDATA_TOKEN is set and no username/password pair is."""
+    import os
+
+    has_password = os.environ.get("EARTHDATA_USERNAME") and os.environ.get("EARTHDATA_PASSWORD")
+    return bool(os.environ.get("EARTHDATA_TOKEN")) and not has_password
+
+
+def download_with_token(granules: list, folder: Path, session=None) -> None:
+    """Download each granule with the Earthdata token as a bearer header.
+
+    No call to the Earthdata login server is needed. Each file is written to a .part file
+    and renamed when complete, so an interrupted run never leaves a broken file behind.
+    """
+    import os
+
+    import requests
+
+    session = session or requests.Session()
+    headers = {"Authorization": f"Bearer {os.environ['EARTHDATA_TOKEN']}"}
+    for i, granule in enumerate(granules, 1):
+        url = granule.data_links()[0]
+        target = folder / _name_of(granule)
+        part = target.with_name(target.name + ".part")
+        resp = session.get(url, headers=headers, stream=True, allow_redirects=True, timeout=300)
+        if resp.status_code in (401, 403) or "urs.earthdata.nasa.gov" in str(resp.url):
+            raise SystemExit("NASA did not accept EARTHDATA_TOKEN (expired or wrong). Generate a new "
+                             "token at https://urs.earthdata.nasa.gov and run again. " + FORBIDDEN_HINT)
+        resp.raise_for_status()
+        with open(part, "wb") as fh:
+            for chunk in resp.iter_content(chunk_size=1 << 20):
+                fh.write(chunk)
+        part.rename(target)
+        print(f"  downloaded {i}/{len(granules)}: {target.name}")
+
+
 def open_granules(results: list, download: bool = False) -> list:
     """File handles for the granules.
 
     Default: stream them (only the Cameroon part is transferred).
     download=True: save whole files in data/raw/imerg/ and read them locally. Files already
     there are skipped, so an interrupted run resumes where it stopped.
+    Token mode always downloads.
     """
     import earthaccess
 
-    if not download:
+    use_token = token_only()
+    if not download and not use_token:
         return earthaccess.open(results)
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     todo = [g for g in results if not (DOWNLOAD_DIR / _name_of(g)).exists()]
     if todo:
         print(f"download: {len(todo)} files to {DOWNLOAD_DIR} ({len(results) - len(todo)} already there)")
         try:
-            earthaccess.download(todo, local_path=str(DOWNLOAD_DIR))
+            if use_token:
+                download_with_token(todo, DOWNLOAD_DIR)
+            else:
+                earthaccess.download(todo, local_path=str(DOWNLOAD_DIR))
         except Exception as err:
             explain_http_error(err)
             raise
@@ -94,6 +135,8 @@ def login() -> None:
             f"{' and '.join(missing)} not set. Put them in the .env file at the repository root "
             "(next to README.md), not in backend/."
         )
+    if token_only():
+        return  # searching needs no login; files are downloaded with the token
     earthaccess.login(strategy="environment")
 
 
@@ -213,7 +256,8 @@ def fetch(
                 "source_units": source_units,
                 "period": {"start": months[0], "end": months[-1]},
                 "granule_count": len(names),
-                "notes": [f"{DATASET['short_name']} v{DATASET['version']} via earthaccess"],
+                "notes": [f"{DATASET['short_name']} v{DATASET['version']} via earthaccess"
+                          + (" search, downloaded with an Earthdata token" if token_only() else "")],
             },
             db_path,
         )
