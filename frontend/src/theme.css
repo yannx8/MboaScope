@@ -200,3 +200,20 @@ input:focus-visible, select:focus-visible { box-shadow: 0 0 0 4px var(--brand-so
 .brand:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
 .brand-word { font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
 .brand-word span { font-weight: 700; background: linear-gradient(90deg, #9ff0cf, #7fb2ea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ---------------------------------------------------------------- explorer map */
+.map { background: #07160f; border-color: var(--border-strong); box-shadow: 0 0 0 1px rgba(111, 224, 180, 0.06), 0 24px 60px -30px rgba(111, 224, 180, 0.35); }
+.map .leaflet-container { background: #07160f; }
+.leaflet-tooltip.map-label { color: #eaf5ef; text-shadow: 0 0 3px #02110c, 0 0 3px #02110c, 0 0 6px #02110c; font-size: 12px; }
+.leaflet-tooltip:not(.map-label) { background: var(--surface-solid); color: var(--text); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8); }
+.leaflet-tooltip-top:not(.map-label)::before { border-top-color: var(--border-strong); }
+.leaflet-tooltip-bottom:not(.map-label)::before { border-bottom-color: var(--border-strong); }
+.leaflet-tooltip-left:not(.map-label)::before { border-left-color: var(--border-strong); }
+.leaflet-tooltip-right:not(.map-label)::before { border-right-color: var(--border-strong); }
+.leaflet-bar { border: 1px solid var(--border-strong) !important; box-shadow: none !important; border-radius: 10px !important; overflow: hidden; }
+.leaflet-bar a { background: rgba(4, 17, 13, 0.85) !important; color: var(--text) !important; border-bottom-color: var(--border) !important; }
+.leaflet-bar a:hover { background: var(--brand-soft) !important; color: var(--brand) !important; }
+.leaflet-control-attribution { background: rgba(4, 17, 13, 0.7) !important; color: var(--text-3) !important; }
+.leaflet-control-attribution a { color: var(--text-2) !important; }
+.map-dot { filter: drop-shadow(0 0 5px rgba(111, 224, 180, 0.8)); }
+.map-dot-current { filter: drop-shadow(0 0 8px rgba(243, 210, 122, 0.9)); }

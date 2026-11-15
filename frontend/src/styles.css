@@ -282,14 +282,14 @@ details.data summary { cursor: pointer; font-size: var(--fs-sm); font-weight: 60
 .leaflet-tooltip.map-label { background: transparent; border: 0; box-shadow: none; font-weight: 700; font-size: 11px; color: #17231c; text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; padding: 0; }
 .leaflet-tooltip.map-label::before { display: none; }
 .legend-scale { margin-top: 0.75rem; }
-.legend-bar { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #8e4a12, #d9b48c 35%, #f4f1ea 50%, #9cbbe0 65%, #1d5c9e); border: 1px solid var(--border); }
+.legend-bar { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #f0b276, #966034 25%, #26342f 50%, #4676aa 75%, #96c8fa); border: 1px solid var(--border); }
 .legend-ticks { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-2); margin-top: 0.25rem; font-family: var(--mono); }
 .legend-list { list-style: none; padding: 0; margin: 0.75rem 0 0; display: grid; gap: 0.4rem; font-size: var(--fs-sm); }
 .legend-list li { display: flex; gap: 0.55rem; align-items: center; }
 .sw { width: 18px; height: 14px; border-radius: 3px; flex: none; }
-.sw-box { border: 3px solid #17231c; box-shadow: 0 0 0 2px #fff; border-radius: 2px; }
-.sw-sig { border: 1.5px solid #17231c; background: transparent; }
-.sw-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--brand); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border-strong); }
+.sw-box { border: 2.5px solid #f3d27a; box-shadow: 0 0 0 2px rgba(2, 17, 12, 0.75); border-radius: 2px; }
+.sw-sig { border: 1.5px solid #eafff6; background: #26342f; }
+.sw-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--brand); border: 2px solid #02110c; box-shadow: 0 0 8px var(--glow); }
 
 .callout { background: var(--warn-soft); border: 1px solid var(--warn-line); padding: 0.75rem 0.85rem; border-radius: var(--radius-sm); font-size: var(--fs-sm); }
 .big-number { font: 800 var(--fs-2xl) var(--mono); }

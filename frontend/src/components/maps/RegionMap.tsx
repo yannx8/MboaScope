@@ -1,9 +1,13 @@
 import 'leaflet/dist/leaflet.css'
 import type { FeatureCollection } from 'geojson'
 import { useEffect, useState } from 'react'
-import { CircleMarker, GeoJSON, MapContainer, Pane, Rectangle, TileLayer, Tooltip, useMap } from 'react-leaflet'
+import { CircleMarker, GeoJSON, MapContainer, Pane, Polygon, Rectangle, TileLayer, Tooltip, useMap } from 'react-leaflet'
 import type { Bounds, Region, SpatialResponse } from '../../types/api'
+import { CAMEROON_OUTLINE } from '../common/Globe'
 import { loadAdminBoundaries } from './adminBoundaries'
+
+// Simplified outline, used only until A3's boundary file exists.
+const OUTLINE: [number, number][] = CAMEROON_OUTLINE.map(([lon, lat]) => [lat, lon])
 
 const CAMEROON: [[number, number], [number, number]] = [
   [1.6, 8.4],
@@ -16,16 +20,17 @@ const toLatLng = (b: Bounds): [[number, number], [number, number]] => [
   [b[1], b[3]],
 ]
 
-// Diverging scale: brown drier, near-white for about zero, blue wetter (same stops as the CSS legend).
+// Diverging scale for the dark theme: brown drier, dark slate for about zero, blue wetter
+// (same stops as the CSS legend). Brighter means a larger change.
 const DRY: [number, number, number][] = [
-  [244, 241, 234],
-  [217, 180, 140],
-  [142, 74, 18],
+  [38, 52, 47],
+  [150, 96, 52],
+  [240, 178, 118],
 ]
 const WET: [number, number, number][] = [
-  [244, 241, 234],
-  [156, 187, 224],
-  [29, 92, 158],
+  [38, 52, 47],
+  [70, 118, 170],
+  [150, 200, 250],
 ]
 
 function mix(stops: [number, number, number][], t: number): string {
@@ -89,19 +94,27 @@ export function RegionMap({
       <MapContainer bounds={CAMEROON} zoomSnap={0.25} scrollWheelZoom={false} style={{ height: '100%' }} attributionControl>
         {showTiles && (
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            opacity={0.55}
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            subdomains="abcd"
+            opacity={0.9}
             eventHandlers={{ tileerror: onTileError }}
           />
         )}
         <FitTo target={target} />
-        {admin && (
+        {admin ? (
           <GeoJSON
             data={admin}
-            style={{ color: '#6b746c', weight: 1, fillColor: '#fbf8f1', fillOpacity: showTiles ? 0.25 : 1 }}
+            style={{ color: '#9ff0cf', weight: 1, opacity: 0.6, fillColor: '#6fe0b4', fillOpacity: showTiles ? 0.04 : 0.08 }}
             interactive={false}
           />
+        ) : (
+          !showTiles && (
+            <Polygon
+              positions={OUTLINE}
+              pathOptions={{ color: '#9ff0cf', weight: 1.2, opacity: 0.55, fillColor: '#6fe0b4', fillOpacity: 0.07, interactive: false }}
+            />
+          )
         )}
         <Pane name="cells" style={{ zIndex: 410 }}>
           {cells.map((c) => (
@@ -113,7 +126,7 @@ export function RegionMap({
               ]}
               pathOptions={{
                 stroke: c.p < alpha,
-                color: '#17231c',
+                color: '#eafff6',
                 weight: 1.25,
                 fillColor: cellColour(c.sen_slope_mm_per_year, scale),
                 fillOpacity: 0.92,
@@ -129,9 +142,9 @@ export function RegionMap({
         <Pane name="box" style={{ zIndex: 420 }}>
           {selected && (
             <>
-              {/* White halo under a dark outline: readable on brown, blue, paper or tiles. */}
-              <Rectangle bounds={toLatLng(selected.boxes.box_3x3.bounds)} pathOptions={{ color: '#ffffff', weight: 7, fill: false, interactive: false }} />
-              <Rectangle bounds={toLatLng(selected.boxes.box_3x3.bounds)} pathOptions={{ color: '#17231c', weight: 3, fill: false }}>
+              {/* Dark halo under a gold outline: readable on brown, blue, slate or tiles. Gold = selected, as on the dashboard. */}
+              <Rectangle bounds={toLatLng(selected.boxes.box_3x3.bounds)} pathOptions={{ color: '#02110c', weight: 7, opacity: 0.75, fill: false, interactive: false }} />
+              <Rectangle bounds={toLatLng(selected.boxes.box_3x3.bounds)} pathOptions={{ color: '#f3d27a', weight: 2.5, fill: false }}>
                 <Tooltip sticky>{selected.boxes.box_3x3.label}: the headline box</Tooltip>
               </Rectangle>
             </>
@@ -147,7 +160,13 @@ export function RegionMap({
                 key={r.id}
                 center={r.centre}
                 radius={isSel ? 8 : 6}
-                pathOptions={{ color: '#ffffff', weight: 2, fillColor: r.has_data ? '#0b6b4b' : '#9aa59c', fillOpacity: 1 }}
+                pathOptions={{
+                  color: isSel ? '#f3d27a' : '#02110c',
+                  weight: isSel ? 3 : 2,
+                  fillColor: isSel ? '#fff6c9' : r.has_data ? '#6fe0b4' : '#5f6f68',
+                  fillOpacity: 1,
+                  className: isSel ? 'map-dot map-dot-current' : 'map-dot',
+                }}
                 eventHandlers={{ click: () => r.has_data && onSelect(r.id) }}
               >
                 <Tooltip key={`${view}-${isSel}`} permanent={view === 'country' || isSel} direction={crowded ? 'left' : 'right'} offset={crowded ? [-8, 0] : [8, 0]} className="map-label">
