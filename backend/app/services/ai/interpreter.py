@@ -382,6 +382,9 @@ EVAL_CASES = (
     "decrease_pettitt2014",
     "no_trend",
     "no_trend_pettitt2014",
+    "increase_inland",
+    "decrease_inland",
+    "no_trend_inland",
 )
 
 # Words a rewrite must keep so that no caveat is dropped or softened.
@@ -566,7 +569,7 @@ def _make_caller(api_key: str, model: str):
 
 
 def run_eval(use_llm: bool) -> int:
-    """Print the 6-case evaluation as markdown, ready to paste in docs/ai-eval.md (task B7)."""
+    """Print the fixture evaluation as markdown, ready to paste in docs/ai-eval.md (task B7)."""
     api_key, model = _gemini_settings()
     if use_llm and not api_key:
         print("explain: GEMINI_API_KEY is not set in .env", file=sys.stderr)
@@ -655,9 +658,9 @@ def suggest_investigations(analysis: dict[str, Any]) -> list[dict[str, Any]]:
 def main(argv: list[str] | None = None) -> int:
     import argparse
 
-    parser = argparse.ArgumentParser(prog="python -m app.services.ai.interpreter", description="Evaluate the explanation on the 6 fixture cases.")
+    parser = argparse.ArgumentParser(prog="python -m app.services.ai.interpreter", description="Evaluate the explanation on the fixture cases.")
     parser.add_argument("--llm", action="store_true", help="ask Gemini for a rewrite (local only, never in CI)")
-    parser.add_argument("--eval", action="store_true", help="run the 6 fixture cases and print a markdown report")
+    parser.add_argument("--eval", action="store_true", help="run the fixture cases and print a markdown report")
     args = parser.parse_args(argv)
     if not args.eval:
         parser.print_help()
