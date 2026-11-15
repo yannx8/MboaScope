@@ -1,107 +1,132 @@
 import { AnnualChart } from '../components/charts/AnnualChart'
 import { ClimatologyChart } from '../components/charts/ClimatologyChart'
 import { Card } from '../components/common/Card'
-import { ErrorMessage, Loading } from '../components/common/Status'
+import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
+import { VerdictChip } from '../components/common/VerdictChip'
 import { useApi } from '../hooks/useApi'
 import { periodIsValid, useInvestigation } from '../hooks/useInvestigation'
 import { api } from '../services/api'
-import { pValue, signed, VERDICT_TEXT } from '../services/format'
+import { BOX_NAME, num, pValue, signed, testName } from '../services/format'
 
 export default function Analysis() {
-  const { request } = useInvestigation()
+  const { request, regions } = useInvestigation()
   const ok = periodIsValid(request)
   const key = [request.region_id, request.start_year, request.end_year]
   const trends = useApi(() => api.trends(request), key, ok)
   const series = useApi(() => api.rainfallSeries(request), key, ok)
   const history = useApi(() => api.history(8), [trends.data?.investigation_id], !!trends.data)
 
-  if (!ok) return null
-  if (trends.error) return <ErrorMessage message={trends.error} />
-  if (!trends.data || !series.data) return <Loading label="Loading the analysis…" />
+  if (!ok) return <PeriodProblem />
+  const failed = trends.error ? trends : series.error ? series : null
+  if (failed) return <ApiProblem status={failed.status} message={failed.error ?? ''} onRetry={failed.reload} />
+  if (!trends.data || !series.data) return <Skeleton kind="chart" label="Loading the analysis…" />
   const h = trends.data.headline
   const sd = series.data
+  const nameOf = (id: string) => regions.find((r) => r.id === id)?.name ?? id
 
   return (
     <div className="grid">
       <div className="span-12">
-        <Card title={`Annual rainfall, ${sd.box_label}`} subtitle={`${h.dataset}, ${h.period}`}>
+        <Card title={`Annual rainfall, ${sd.region_name}`} subtitle={`${sd.box_label}. ${h.dataset}, ${h.period}.`}>
           <AnnualChart years={sd.years} h={h} />
           {sd.excluded_years.length > 0 && (
-            <p className="muted">Excluded (fewer than 12 months): {sd.excluded_years.join(', ')}</p>
+            <p className="note note-info">
+              <span>Left out because months are missing (never filled in): {sd.excluded_years.join(', ')}.</span>
+            </p>
           )}
           {sd.warnings.map((w) => (
-            <p key={w} className="status status-error">
-              {w}
+            <p key={w} className="note" role="alert">
+              <span>{w}</span>
             </p>
           ))}
         </Card>
       </div>
 
-      <div className="span-6">
-        <Card title="Test results" subtitle={`Primary test: ${h.mk_test_used === 'hamed_rao' ? 'Hamed-Rao modified Mann-Kendall' : 'Mann-Kendall'}`}>
-          <table className="table">
+      <div className="span-7">
+        <Card fill title="Test results" subtitle={`Primary test: ${testName(h.mk_test_used)}. Significance level ${h.alpha}.`}>
+          <table className="table table-kv">
+            <caption className="sr-only">All headline test results</caption>
             <tbody>
-              <tr><th>Verdict</th><td>{VERDICT_TEXT[h.verdict]}</td></tr>
-              <tr><th>Mann-Kendall (original)</th><td>τ = {h.mk_original.tau}, z = {h.mk_original.z}, p = {pValue(h.mk_original.p)}</td></tr>
-              <tr><th>Hamed-Rao modified</th><td>z = {h.mk_hamed_rao.z}, p = {pValue(h.mk_hamed_rao.p)}</td></tr>
-              <tr><th>Lag-1 autocorrelation</th><td>{h.lag1_autocorr} {h.autocorr_significant ? '(significant)' : '(not significant)'}</td></tr>
-              <tr><th>Sen's slope</th><td>{signed(h.sen_slope_mm_per_year)} mm/yr (95% CI {signed(h.sen_ci95[0])} to {signed(h.sen_ci95[1])})</td></tr>
-              <tr><th>Relative change</th><td>{signed(h.pct_per_decade)}% per decade</td></tr>
-              <tr><th>Pettitt change point</th><td>{h.pettitt.change_year}, p = {pValue(h.pettitt.p)} {h.pettitt.significant ? '(significant)' : '(not significant)'}</td></tr>
-              <tr><th>Mean annual total</th><td>{h.mean_annual_mm.toLocaleString('en-GB')} mm ({h.n_years} years)</td></tr>
+              <tr><th scope="row">Verdict</th><td><VerdictChip verdict={h.verdict} /></td></tr>
+              <tr><th scope="row">Sen's slope (size of the change)</th><td>{signed(h.sen_slope_mm_per_year)} mm/yr, 95% CI {signed(h.sen_ci95[0])} to {signed(h.sen_ci95[1])}</td></tr>
+              <tr><th scope="row">Relative change</th><td>{signed(h.pct_per_decade)}% per decade</td></tr>
+              <tr><th scope="row">Mann-Kendall (original){h.mk_test_used === 'original' ? ', primary' : ''}</th><td>τ = {h.mk_original.tau}, z = {h.mk_original.z}, p = {pValue(h.mk_original.p)}</td></tr>
+              <tr><th scope="row">Hamed-Rao modified{h.mk_test_used === 'hamed_rao' ? ', primary' : ''}</th><td>z = {h.mk_hamed_rao.z}, p = {pValue(h.mk_hamed_rao.p)}</td></tr>
+              <tr><th scope="row">Lag-1 autocorrelation</th><td>{h.lag1_autocorr} ({h.autocorr_significant ? 'significant, so Hamed-Rao is primary' : 'not significant'})</td></tr>
+              <tr>
+                <th scope="row">Pettitt change point</th>
+                <td>
+                  {h.pettitt.change_year}, p = {pValue(h.pettitt.p)} ({h.pettitt.significant ? 'significant' : 'not significant'})
+                  {h.pettitt.significant && h.pettitt.change_year >= 2013 && h.pettitt.change_year <= 2015 && (
+                    <span className="chip chip-marker" style={{ marginLeft: '0.4rem' }}>at the 2014 satellite change</span>
+                  )}
+                </td>
+              </tr>
+              <tr><th scope="row">Mean annual total</th><td>{num(h.mean_annual_mm)} mm over {h.n_years} complete years</td></tr>
             </tbody>
           </table>
         </Card>
       </div>
 
-      <div className="span-6">
-        <Card title="Seasonal cycle" subtitle="Mean monthly total over the selected years">
+      <div className="span-5">
+        <Card fill title="Seasonal cycle" subtitle="Mean rainfall in each calendar month, selected years">
           <ClimatologyChart data={sd.climatology} />
         </Card>
       </div>
 
-      <div className="span-6">
-        <Card title="Robustness checks" subtitle="Same test on smaller and larger boxes. Never promoted to the headline.">
+      <div className="span-7">
+        <Card fill title="Robustness checks" subtitle="The same test on smaller and larger boxes. These never replace the headline.">
           {trends.data.sensitivity.length === 0 ? (
-            <p className="muted">Not available for this data source.</p>
+            <p className="muted">Not available for this data source (area-averaged data only).</p>
           ) : (
-            <table className="table">
-              <thead>
-                <tr><th>Box</th><th>Slope (mm/yr)</th><th>95% CI</th><th>p</th><th>Verdict</th></tr>
-              </thead>
-              <tbody>
-                {trends.data.sensitivity.map((r) => (
-                  <tr key={r.box + r.dataset}>
-                    <td>{r.box.replace('box_', '')}</td>
-                    <td>{signed(r.sen_slope_mm_per_year)}</td>
-                    <td>{signed(r.sen_ci95[0])} to {signed(r.sen_ci95[1])}</td>
-                    <td>{pValue(r.p)}</td>
-                    <td>{VERDICT_TEXT[r.verdict].replace('Statistically significant', 'Significant')}</td>
+            <div className="table-scroll" style={{ maxHeight: 'none' }} tabIndex={0} role="region" aria-label="Robustness checks">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Box</th>
+                    <th scope="col">Result</th>
+                    <th scope="col" className="num">mm/yr</th>
+                    <th scope="col" className="num hide-sm">95% CI</th>
+                    <th scope="col" className="num">p</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {trends.data.sensitivity.map((r) => (
+                    <tr key={r.box + r.dataset}>
+                      <th scope="row">
+                        {BOX_NAME[r.box] ?? r.box}
+                        <span className="small" style={{ display: 'block', fontWeight: 400 }}>{r.dataset}</span>
+                      </th>
+                      <td><VerdictChip verdict={r.verdict} /></td>
+                      <td className="num">{signed(r.sen_slope_mm_per_year)}</td>
+                      <td className="num hide-sm nowrap">{signed(r.sen_ci95[0])} to {signed(r.sen_ci95[1])}</td>
+                      <td className="num">{pValue(r.p)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </Card>
       </div>
 
-      <div className="span-6">
-        <Card title="Data and provenance">
-          <dl className="facts">
+      <div className="span-5">
+        <Card fill title="Data and provenance">
+          <dl className="facts" style={{ marginTop: 0 }}>
             <dt>Dataset</dt><dd>{sd.provenance.dataset}</dd>
             <dt>DOI</dt><dd><a href={`https://doi.org/${sd.provenance.doi}`}>{sd.provenance.doi}</a></dd>
-            <dt>Access</dt><dd>{sd.provenance.access_method}</dd>
-            <dt>Source units</dt><dd>{sd.provenance.source_units}</dd>
+            <dt>Access</dt><dd>{sd.provenance.access_method}{sd.is_mock ? ' (synthetic demo data)' : ''}</dd>
+            <dt>Units in file</dt><dd>{sd.provenance.source_units}</dd>
             <dt>Available</dt><dd>{sd.provenance.period.join(' to ')}</dd>
           </dl>
-          {sd.provenance.notes.map((n) => <p key={n} className="muted">{n}</p>)}
+          {sd.provenance.notes.map((n) => <p key={n} className="small" style={{ marginTop: '0.6rem' }}>{n}</p>)}
           {history.data && history.data.length > 0 && (
             <>
               <h3>Recent investigations</h3>
-              <ul className="history">
+              <ul className="small" style={{ paddingLeft: '1.1rem', margin: 0 }}>
                 {history.data.map((i) => (
                   <li key={i.id}>
-                    {i.region_id} {i.start_year}–{i.end_year}: {VERDICT_TEXT[i.verdict].toLowerCase()}
+                    {nameOf(i.region_id)}, {i.start_year} to {i.end_year}: <VerdictChip verdict={i.verdict} />
                   </li>
                 ))}
               </ul>
