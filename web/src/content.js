@@ -117,6 +117,21 @@ export const content = {
   mapHeadlineBox: 'headline box',
   mapCellTooltip: (slope, p, mean) => `Slope ${slope} mm per year, p = ${p}, mean ${mean} mm per year`,
   mapLoading: 'Loading map...',
+  placeLegend: 'Choose a place',
+  placeDouala: 'Douala',
+  // Short names for the picker; ids as proposed in issue #39. Unknown ids fall back to the box label.
+  cityNames: {
+    city_edea: 'Edéa',
+    city_limbe: 'Limbe',
+    city_kumba: 'Kumba',
+    city_yaounde: 'Yaoundé',
+    city_bafoussam: 'Bafoussam',
+  },
+  placeHeadlineTag: 'headline',
+  placeExploratory: 'Exploratory city result',
+  placeMultiple: (n, fp) => `One of ${n} extra city tests: about ${fp} false positives expected by chance across them.`,
+  placeMultipleNoNumbers: 'One of several extra city tests: some significant results are expected by chance.',
+  placeScope: 'A satellite estimate averaged over a box of about 33 km, not a local reading. The Douala answer above stays the headline.',
   mapA11y: 'Map of the Douala area with the study boxes and the per-cell trend grid. The same numbers are in the robustness table.',
 
   // 6. Robustness

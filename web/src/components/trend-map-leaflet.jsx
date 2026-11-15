@@ -1,5 +1,6 @@
 import 'leaflet/dist/leaflet.css'
-import { MapContainer, Rectangle, TileLayer, Tooltip } from 'react-leaflet'
+import { useEffect } from 'react'
+import { MapContainer, Rectangle, TileLayer, Tooltip, useMap } from 'react-leaflet'
 import { content } from '../content.js'
 import { num, pValue, signed } from '../lib/format.js'
 import { OSM_ATTRIBUTION, OSM_TILES } from '../lib/science.js'
@@ -36,7 +37,22 @@ const toLatLng = ([south, north, west, east]) => [
   [north, east],
 ]
 
-export default function TrendMapLeaflet({ s, annual, headlineBox, maxAbs }) {
+// Moves the map to the selected city box, or back to the Douala grid.
+function Focus({ target }) {
+  const map = useMap()
+  const key = target ? JSON.stringify(target) : ''
+  useEffect(() => {
+    if (!key) return
+    const bounds = JSON.parse(key)
+    const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const opts = { padding: [24, 24], maxZoom: 9 }
+    if (still) map.fitBounds(bounds, opts)
+    else map.flyToBounds(bounds, { ...opts, duration: 0.8 })
+  }, [map, key])
+  return null
+}
+
+export default function TrendMapLeaflet({ s, annual, headlineBox, maxAbs, selected, focus, onSelect }) {
   const half = halfStep(s.cells)
   const boxes = Object.entries(annual.boxes ?? {})
   const all = s.cells.length
@@ -58,6 +74,7 @@ export default function TrendMapLeaflet({ s, annual, headlineBox, maxAbs }) {
       attributionControl
     >
       <TileLayer url={OSM_TILES} attribution={OSM_ATTRIBUTION} />
+      <Focus target={focus ? toLatLng(focus) : onSelect ? all : null} />
       {s.cells.map((c) => {
         const sig = c.p !== null && c.p < s.alpha
         return (
@@ -82,6 +99,28 @@ export default function TrendMapLeaflet({ s, annual, headlineBox, maxAbs }) {
       })}
       {boxes.map(([id, b]) => {
         const head = id === headlineBox
+        const city = id.startsWith('city_')
+        if (city) {
+          const on = id === selected
+          return (
+            <Rectangle
+              key={`${id}-${on}`}
+              bounds={toLatLng(b.bounds)}
+              eventHandlers={onSelect ? { click: () => onSelect(id) } : undefined}
+              pathOptions={{
+                color: on ? '#f2b31b' : '#0a6a4a',
+                weight: on ? 4 : 2,
+                dashArray: on ? null : '4 4',
+                fillColor: on ? '#f2b31b' : '#0a6a4a',
+                fillOpacity: on ? 0.18 : 0.08,
+              }}
+            >
+              <Tooltip permanent direction="top" className="city-label">
+                {b.label}
+              </Tooltip>
+            </Rectangle>
+          )
+        }
         return (
           <Rectangle
             key={id}
