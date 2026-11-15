@@ -15,19 +15,28 @@ export const NAV = [
 ]
 
 export function BrandMark() {
-  // A rain drop in the three colours of the flag of Cameroon.
+  // A rain drop seen through a scope ring, with a satellite on its orbit:
+  // satellite rainfall, looked at closely. Aurora palette, no flag colours.
   return (
-    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+    <svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
       <defs>
-        <clipPath id="drop">
-          <path d="M16 2C16 2 5 14.5 5 21a11 11 0 0 0 22 0C27 14.5 16 2 16 2z" />
-        </clipPath>
+        <linearGradient id="bm-drop" x1="0.2" y1="0" x2="0.8" y2="1">
+          <stop offset="0" stopColor="#c8fbe6" />
+          <stop offset="0.45" stopColor="#5fdcb0" />
+          <stop offset="1" stopColor="#2f7fd0" />
+        </linearGradient>
+        <linearGradient id="bm-ring" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#9ff0cf" />
+          <stop offset="1" stopColor="#7fb2ea" stopOpacity="0.5" />
+        </linearGradient>
       </defs>
-      <g clipPath="url(#drop)">
-        <rect x="0" y="0" width="12.3" height="32" fill="#007a5e" />
-        <rect x="12.3" y="0" width="7.4" height="32" fill="#ce1126" />
-        <rect x="19.7" y="0" width="12.3" height="32" fill="#fcd116" />
-      </g>
+      <ellipse cx="20" cy="21" rx="17.5" ry="7.5" transform="rotate(-24 20 21)" fill="none" stroke="url(#bm-ring)" strokeWidth="1.4" opacity="0.85" />
+      <path d="M20 5.5c0 0-8.5 9.6-8.5 15.4a8.5 8.5 0 0 0 17 0C28.5 15.1 20 5.5 20 5.5z" fill="url(#bm-drop)" />
+      <path d="M14.6 22.6l2.7-2.6 2.7 2.6 2.7-2.6 2.7 2.6" fill="none" stroke="#04241b" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16.4 13.2c-1.2 1.7-2 3.3-2.3 4.6" fill="none" stroke="#ffffff" strokeOpacity="0.7" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="M4.6 28.6a17.5 7.5 -24 0 0 7.2 1.6" fill="none" stroke="#9ff0cf" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="34.6" cy="12.6" r="2.1" fill="#eafff6" />
+      <circle cx="34.6" cy="12.6" r="3.6" fill="#9ff0cf" opacity="0.25" />
     </svg>
   )
 }
@@ -63,7 +72,7 @@ export function Layout() {
         <div className="container topbar-inner">
           <NavLink to={{ pathname: '/', search }} className="brand" aria-label="MboaScope home">
             <BrandMark />
-            MboaScope <span className="brand-tag">Rainfall trends in Cameroon</span>
+            <span className="brand-word">Mboa<span>Scope</span></span> <span className="brand-tag">Rainfall trends in Cameroon</span>
           </NavLink>
           <nav className="topnav" aria-label="Main">
             {NAV.map((item) => (
