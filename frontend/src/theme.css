@@ -233,3 +233,13 @@ input:focus-visible, select:focus-visible { box-shadow: 0 0 0 4px var(--brand-so
 .term-tip[hidden] { display: none; }
 @keyframes tip-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .term-tip { animation: none; } }
+
+/* ---------------------------------------------------------------- period presets */
+.presets { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.preset { min-height: 34px; padding: 0.25rem 0.8rem; border-radius: 999px; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border); display: inline-flex; gap: 0.4rem; align-items: center; }
+.preset span { font-weight: 400; color: var(--text-3); }
+.preset:hover { border-color: var(--brand); color: var(--text); }
+.preset[aria-pressed='true'] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); box-shadow: 0 0 16px -6px var(--glow); }
+.preset[aria-pressed='true'] span { color: var(--text-2); }
+@media (min-width: 760px) { .controls-bar .presets { grid-column: auto; align-self: end; padding-bottom: 5px; } }
