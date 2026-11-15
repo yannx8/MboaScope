@@ -37,7 +37,7 @@ class Headline(BaseModel):
     region_name: str
     box: str
     dataset: str
-    period: str  # "2001-2025"
+    period: str  # "2001-2024"
     n_years: int
     alpha: float
     mean_annual_mm: int

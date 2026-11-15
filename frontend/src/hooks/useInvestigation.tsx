@@ -5,7 +5,7 @@ import type { InvestigationRequest, Region } from '../types/api'
 import { useApi } from './useApi'
 
 export const FIRST_YEAR = 2001
-export const LAST_YEAR = 2025
+export const LAST_YEAR = 2024 // keep equal to END_YEAR in backend/app/core/config.py
 export const MIN_YEARS = 10
 const DEFAULT_REGION = 'douala'
 
@@ -20,7 +20,7 @@ interface InvestigationContextValue {
 const InvestigationContext = createContext<InvestigationContextValue | null>(null)
 
 /**
- * The current investigation (region + period) lives in the URL (?region=douala&from=2001&to=2025),
+ * The current investigation (region + period) lives in the URL (?region=douala&from=2001&to=2024),
  * so every page shares it and a link reproduces exactly what the user saw.
  */
 export function InvestigationProvider({ children }: { children: ReactNode }) {

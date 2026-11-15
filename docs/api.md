@@ -9,7 +9,7 @@ Interactive docs while the server runs: http://127.0.0.1:8000/docs
 ## Conventions
 
 - Every POST body is an **investigation**: `{"region_id": "douala", "start_year": 2001, "end_year": 2025}`.
-  Years default to 2001 and 2025. The period must be at least 10 years.
+  Years default to 2001 and 2024 (IMERG V07 Final has no complete year after 2024). The period must be at least 10 years.
 - Every response from a POST carries `api_version`, `generated_at` (UTC ISO 8601) and `is_mock`.
   `is_mock` is true when the region's data is synthetic; the frontend must then show the demo banner.
 - The backend rounds for display: millimetres 0 decimals, slopes 1 decimal, p-values 3 decimals,

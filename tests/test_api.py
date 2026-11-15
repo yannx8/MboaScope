@@ -38,7 +38,7 @@ def test_rainfall_series(client):
 def test_trends_and_history(client):
     body = client.post("/api/analysis/trends", json={"region_id": "maroua"}).json()
     h = body["headline"]
-    assert h["region_name"] == "Maroua" and h["period"] == "2001-2025"
+    assert h["region_name"] == "Maroua" and h["period"] == "2001-2024"
     assert "coastal_skill" not in h["caveats"]
     assert [r["box"] for r in body["sensitivity"]] == ["box_1x1", "box_5x5"]
     history = client.get("/api/analysis/history").json()

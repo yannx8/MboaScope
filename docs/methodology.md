@@ -6,7 +6,7 @@ The code follows this page. If they disagree, the code is wrong.
 ## 1. Question
 
 Does the NASA satellite record show a statistically detectable monotonic trend in annual rainfall over a
-selected region of Cameroon, in a selected period (default 2001-2025), and how confident can we be?
+selected region of Cameroon, in a selected period (default 2001-2024), and how confident can we be?
 
 The headline test is fixed before looking at the data: one dataset, one box, one significance level (0.05).
 Everything else is a robustness check and is never promoted to the headline.
@@ -16,6 +16,8 @@ Everything else is a robustness check and is never promoted to the headline.
 - **Primary:** GPM IMERG Final, monthly, Version 07 (`GPM_3IMERGM`), NASA GES DISC,
   DOI [10.5067/GPM/IMERG/3B-MONTH/07](https://doi.org/10.5067/GPM/IMERG/3B-MONTH/07).
   Grid 0.1 degree (about 11 km). Available from June 2000, about 4 months behind real time.
+  **V07 Final stops during 2025** (NASA is moving IMERG to Version 8), so 2025 is incomplete and the
+  study ends in 2024. V08 must never be joined to the V07 series; switching means rerunning everything on V08.
 - The file stores a **mean precipitation rate** (check the `units` attribute; usually mm/hr), not a total.
 - **Optional cross-check:** GPCP monthly V3.3 (0.5 degree, different inputs).
 - **Never** use TRMM 3B43 (discontinued 31 December 2019) and never join two products into one series:
@@ -66,7 +68,7 @@ results are published; until then `verified` is false.
    May 2014 and to GPM from June 2014. NASA warns that a changing satellite constellation can create
    artifacts in multi-year studies. A step in 2014 can look like a trend.
 2. **Coastal location** (Douala, Buea). NASA reports lower IMERG skill over coastal zones.
-3. **Short record.** About 25 annual values give low statistical power. A non-significant result is a
+3. **Short record.** About 24 annual values give low statistical power. A non-significant result is a
    valid, expected outcome.
 4. **Area estimate.** A grid average is a satellite estimate over an area, not a station measurement.
 

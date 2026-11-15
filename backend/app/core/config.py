@@ -21,7 +21,7 @@ REGIONS_FILE = DATA_DIR / "regions" / "cameroon_study_regions.json"
 # ------------------------------------------------------------------ science
 API_VERSION = "2.0"
 START_YEAR = 2001
-END_YEAR = 2025  # set to 2024 if the December 2025 granule is not published
+END_YEAR = 2024  # IMERG V07 Final ends in 2025 before December (NASA moves to V08), so 2025 is incomplete
 ALPHA = 0.05
 MIN_YEARS = 10  # shortest period the trend tests accept
 

@@ -27,7 +27,7 @@ Python function calls inside the backend and through the HTTP contract (`docs/ap
    observations · box_observations · sources · investigations
 ```
 
-## Request flow: `POST /api/analysis/trends {"region_id": "garoua", "start_year": 2001, "end_year": 2025}`
+## Request flow: `POST /api/analysis/trends {"region_id": "garoua", "start_year": 2001, "end_year": 2024}`
 
 1. `routes/analysis.py` validates the body (Pydantic) and calls `investigation.run()`.
 2. `investigation.run()` checks the region exists, that data was ingested, and the period (>= 10 years,
