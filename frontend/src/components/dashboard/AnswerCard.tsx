@@ -1,4 +1,5 @@
 import { periodLabel, primaryP, pValue, signed, VERDICT_PLAIN, VERDICT_TEXT, VERDICT_TONE } from '../../services/format'
+import { Term } from '../common/Term'
 import type { Headline, Region } from '../../types/api'
 import { IconDown, IconFlat, IconInfo, IconUp } from '../common/Icons'
 
@@ -22,33 +23,33 @@ export function AnswerCard({ h, region }: { h: Headline; region: Region | null }
       </p>
       <dl className="answer-stats">
         <div>
-          <dt>Estimated change</dt>
+          <dt><Term id="sen_slope">Estimated change</Term></dt>
           <dd>
             {signed(h.sen_slope_mm_per_year)} <small>mm per year</small>
           </dd>
         </div>
         <div>
-          <dt>95% interval</dt>
+          <dt><Term id="ci95">95% interval</Term></dt>
           <dd>
             {signed(lo)} to {signed(hi)}
           </dd>
         </div>
         <div>
-          <dt>Per decade</dt>
+          <dt><Term id="per_decade">Per decade</Term></dt>
           <dd>
             {signed(h.pct_per_decade)}% <small>of the mean</small>
           </dd>
         </div>
         <div>
-          <dt>p-value</dt>
+          <dt><Term id="p_value">p-value</Term></dt>
           <dd>
             {pValue(primaryP(h))} <small>(significant below {h.alpha})</small>
           </dd>
         </div>
       </dl>
       <p className="answer-foot">
-        {h.n_years} complete years. Mean {h.mean_annual_mm.toLocaleString('en-GB')} mm per year. Satellite estimate over a box of about 33
-        km around {h.region_name}, not a station reading.
+        {h.n_years} complete years. Mean {h.mean_annual_mm.toLocaleString('en-GB')} mm per year. Satellite estimate over a <Term id="headline_box">box of about 33 km</Term>
+        around {h.region_name}, not a station reading.
       </p>
       {region && !region.verified && (
         <p className="note" role="note">

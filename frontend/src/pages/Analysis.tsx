@@ -1,4 +1,5 @@
 import { AnnualChart } from '../components/charts/AnnualChart'
+import { Term } from '../components/common/Term'
 import { ClimatologyChart } from '../components/charts/ClimatologyChart'
 import { Card } from '../components/common/Card'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
@@ -47,14 +48,14 @@ export default function Analysis() {
           <table className="table table-kv">
             <caption className="sr-only">All headline test results</caption>
             <tbody>
-              <tr><th scope="row">Verdict</th><td><VerdictChip verdict={h.verdict} /></td></tr>
-              <tr><th scope="row">Sen's slope (size of the change)</th><td>{signed(h.sen_slope_mm_per_year)} mm/yr, 95% CI {signed(h.sen_ci95[0])} to {signed(h.sen_ci95[1])}</td></tr>
-              <tr><th scope="row">Relative change</th><td>{signed(h.pct_per_decade)}% per decade</td></tr>
-              <tr><th scope="row">Mann-Kendall (original){h.mk_test_used === 'original' ? ', primary' : ''}</th><td>τ = {h.mk_original.tau}, z = {h.mk_original.z}, p = {pValue(h.mk_original.p)}</td></tr>
-              <tr><th scope="row">Hamed-Rao modified{h.mk_test_used === 'hamed_rao' ? ', primary' : ''}</th><td>z = {h.mk_hamed_rao.z}, p = {pValue(h.mk_hamed_rao.p)}</td></tr>
-              <tr><th scope="row">Lag-1 autocorrelation</th><td>{h.lag1_autocorr} ({h.autocorr_significant ? 'significant, so Hamed-Rao is primary' : 'not significant'})</td></tr>
+              <tr><th scope="row"><Term id="significant">Verdict</Term></th><td><VerdictChip verdict={h.verdict} /></td></tr>
+              <tr><th scope="row"><Term id="sen_slope">Sen's slope</Term> (size of the change)</th><td>{signed(h.sen_slope_mm_per_year)} mm/yr, 95% CI {signed(h.sen_ci95[0])} to {signed(h.sen_ci95[1])}</td></tr>
+              <tr><th scope="row"><Term id="per_decade">Relative change</Term></th><td>{signed(h.pct_per_decade)}% per decade</td></tr>
+              <tr><th scope="row"><Term id="mann_kendall">Mann-Kendall</Term> (original){h.mk_test_used === 'original' ? ', primary' : ''}</th><td>τ = {h.mk_original.tau}, z = {h.mk_original.z}, p = {pValue(h.mk_original.p)}</td></tr>
+              <tr><th scope="row"><Term id="hamed_rao">Hamed-Rao</Term> modified{h.mk_test_used === 'hamed_rao' ? ', primary' : ''}</th><td>z = {h.mk_hamed_rao.z}, p = {pValue(h.mk_hamed_rao.p)}</td></tr>
+              <tr><th scope="row"><Term id="autocorrelation">Lag-1 autocorrelation</Term></th><td>{h.lag1_autocorr} ({h.autocorr_significant ? 'significant, so Hamed-Rao is primary' : 'not significant'})</td></tr>
               <tr>
-                <th scope="row">Pettitt change point</th>
+                <th scope="row"><Term id="pettitt">Pettitt change point</Term></th>
                 <td>
                   {h.pettitt.change_year}, p = {pValue(h.pettitt.p)} ({h.pettitt.significant ? 'significant' : 'not significant'})
                   {h.pettitt.significant && h.pettitt.change_year >= 2013 && h.pettitt.change_year <= 2015 && (

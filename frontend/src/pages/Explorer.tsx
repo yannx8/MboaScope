@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Term } from '../components/common/Term'
 import { Card } from '../components/common/Card'
 import { DataTable } from '../components/common/DataTable'
 import { ApiProblem, Loading, PeriodProblem } from '../components/common/Status'
@@ -91,7 +92,7 @@ export default function Explorer() {
                   <span>{signed(scale)}</span>
                 </div>
                 <p className="small" style={{ margin: '0.15rem 0 0' }}>
-                  Sen slope, mm per year. Brown: drier. Blue: wetter.
+                  <Term id="sen_slope">Sen slope</Term>, mm per year. Brown: drier. Blue: wetter.
                 </p>
               </div>
               <ul className="legend-list">
