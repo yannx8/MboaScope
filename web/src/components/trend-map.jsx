@@ -1,6 +1,7 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { content } from '../content.js'
 import { boxLabel, num, signed } from '../lib/format.js'
+import CityPanel, { PlacePicker } from './city-panel.jsx'
 import { IconInfo, IconMap } from './icons.jsx'
 import { Section } from './section.jsx'
 
@@ -22,17 +23,29 @@ export default function TrendMap({ spatial, annual, analysis }) {
       ]}
     >
       {spatial.data && annual.data && (
-        <MapBody s={spatial.data} annual={annual.data} headlineBox={analysis.data?.headline?.box ?? 'box_3x3'} />
+        <MapBody
+          s={spatial.data}
+          annual={annual.data}
+          a={analysis.data}
+          headlineBox={analysis.data?.headline?.box ?? 'box_3x3'}
+        />
       )}
     </Section>
   )
 }
 
-function MapBody({ s, annual, headlineBox }) {
+const isCity = (id) => id.startsWith('city_')
+
+function MapBody({ s, annual, a, headlineBox }) {
+  // City results are optional (contract proposal #39). Without them the picker is hidden.
+  const cities = (a?.cities ?? []).filter((c) => annual.boxes?.[c.box])
+  const [place, setPlace] = useState(headlineBox)
+  const city = cities.find((c) => c.box === place) ?? null
+  const focus = city ? annual.boxes[city.box].bounds : null
   const cells = s.available ? (s.cells ?? []) : []
   // Colour scale only: symmetric around zero so brown and blue mean the same everywhere.
   const maxAbs = cells.reduce((m, c) => Math.max(m, Math.abs(c.sen_slope_mm_per_year ?? 0)), 0)
-  const boxes = Object.entries(annual.boxes ?? {})
+  const boxes = Object.entries(annual.boxes ?? {}).filter(([id]) => !isCity(id))
 
   return (
     <>
@@ -48,14 +61,27 @@ function MapBody({ s, annual, headlineBox }) {
         <p className="state">{content.mapUnavailable}</p>
       )}
 
+      {cities.length > 0 && (
+        <PlacePicker cities={cities} annual={annual} headlineBox={headlineBox} place={place} onChange={setPlace} />
+      )}
+
       <figure className="map">
         <div className="map-frame" role="img" aria-label={content.mapA11y}>
           <Suspense fallback={<p className="state map-loading">{content.mapLoading}</p>}>
-            <TrendMapLeaflet s={{ ...s, cells }} annual={annual} headlineBox={headlineBox} maxAbs={maxAbs} />
+            <TrendMapLeaflet
+              s={{ ...s, cells }}
+              annual={annual}
+              headlineBox={headlineBox}
+              maxAbs={maxAbs}
+              selected={place}
+              focus={focus}
+              onSelect={cities.length > 0 ? setPlace : undefined}
+            />
           </Suspense>
         </div>
         <figcaption className="map-key">
-          {cells.length > 0 && (
+          {city && <CityPanel row={city} annual={annual} a={a} />}
+          {!city && cells.length > 0 && (
             <div className="legend">
               <p className="legend-title">{content.mapLegendTitle}</p>
               <div className="legend-bar" aria-hidden="true" />
@@ -75,7 +101,7 @@ function MapBody({ s, annual, headlineBox }) {
               </p>
             </div>
           )}
-          <ul className="box-key">
+          <ul className={`box-key ${city ? 'is-dim' : ''}`}>
             {boxes.map(([id, b]) => (
               <li key={id} className={id === headlineBox ? 'is-headline' : ''}>
                 <span className="swatch-box" aria-hidden="true" />
