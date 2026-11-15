@@ -4,18 +4,18 @@
     "One study area per regional capital of Cameroon. Owner: Developer A (GIS tasks).",
     "centre_lat / centre_lon are IMERG 0.1 degree cell centres (x.x5) containing the city centre.",
     "Boxes are derived in backend/app/services/gis/regions.py: box_kxk = k x k cells around the centre cell; the trend map uses 9 x 9.",
-    "PROVISIONAL: every centre except Douala must still be checked on a map (task A3) before results are published."
+    "Checked on a map in task A3 with backend/scripts/check_regions.py (Natural Earth city points and land, geoBoundaries ADM1): every centre cell contains its city and every 3 x 3 box is at least 87% land. Ebolowa and Garoua stay verified: false because the Natural Earth city point lies exactly on the south edge of the centre cell; confirm with a second source before setting them to true."
   ],
   "regions": [
     {"id": "douala", "name": "Douala", "admin_region": "Littoral", "centre_lat": 4.05, "centre_lon": 9.75, "coastal": true, "verified": true},
-    {"id": "yaounde", "name": "Yaoundé", "admin_region": "Centre", "centre_lat": 3.85, "centre_lon": 11.55, "coastal": false, "verified": false},
-    {"id": "buea", "name": "Buea", "admin_region": "South-West", "centre_lat": 4.15, "centre_lon": 9.25, "coastal": true, "verified": false},
-    {"id": "bamenda", "name": "Bamenda", "admin_region": "North-West", "centre_lat": 5.95, "centre_lon": 10.15, "coastal": false, "verified": false},
-    {"id": "bafoussam", "name": "Bafoussam", "admin_region": "West", "centre_lat": 5.45, "centre_lon": 10.45, "coastal": false, "verified": false},
+    {"id": "yaounde", "name": "Yaoundé", "admin_region": "Centre", "centre_lat": 3.85, "centre_lon": 11.55, "coastal": false, "verified": true},
+    {"id": "buea", "name": "Buea", "admin_region": "South-West", "centre_lat": 4.15, "centre_lon": 9.25, "coastal": true, "verified": true},
+    {"id": "bamenda", "name": "Bamenda", "admin_region": "North-West", "centre_lat": 5.95, "centre_lon": 10.15, "coastal": false, "verified": true},
+    {"id": "bafoussam", "name": "Bafoussam", "admin_region": "West", "centre_lat": 5.45, "centre_lon": 10.45, "coastal": false, "verified": true},
     {"id": "ebolowa", "name": "Ebolowa", "admin_region": "South", "centre_lat": 2.95, "centre_lon": 11.15, "coastal": false, "verified": false},
-    {"id": "bertoua", "name": "Bertoua", "admin_region": "East", "centre_lat": 4.55, "centre_lon": 13.65, "coastal": false, "verified": false},
-    {"id": "ngaoundere", "name": "Ngaoundéré", "admin_region": "Adamawa", "centre_lat": 7.35, "centre_lon": 13.55, "coastal": false, "verified": false},
+    {"id": "bertoua", "name": "Bertoua", "admin_region": "East", "centre_lat": 4.55, "centre_lon": 13.65, "coastal": false, "verified": true},
+    {"id": "ngaoundere", "name": "Ngaoundéré", "admin_region": "Adamawa", "centre_lat": 7.35, "centre_lon": 13.55, "coastal": false, "verified": true},
     {"id": "garoua", "name": "Garoua", "admin_region": "North", "centre_lat": 9.35, "centre_lon": 13.35, "coastal": false, "verified": false},
-    {"id": "maroua", "name": "Maroua", "admin_region": "Far North", "centre_lat": 10.55, "centre_lon": 14.35, "coastal": false, "verified": false}
+    {"id": "maroua", "name": "Maroua", "admin_region": "Far North", "centre_lat": 10.55, "centre_lon": 14.35, "coastal": false, "verified": true}
   ]
 }
