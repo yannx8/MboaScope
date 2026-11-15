@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { InvestigationProvider } from '../hooks/useInvestigation'
+import { InvestigationProvider, LAST_YEAR } from '../hooks/useInvestigation'
 import { ApiError } from '../services/api'
 import { INTERPRET, REGIONS, SERIES, trends } from '../test/fixtures'
 import Assistant from './Assistant'
@@ -55,7 +55,7 @@ describe('Dashboard', () => {
     await waitFor(() => expect(within(table).getAllByRole('row')).toHaveLength(3)) // header + 2 regions with data
     expect(within(table).getByRole('button', { name: 'Douala' })).toBeInTheDocument()
     expect(within(table).getByText('No significant trend')).toBeInTheDocument()
-    expect(mocked.trends).toHaveBeenCalledWith({ region_id: 'douala', start_year: 2001, end_year: 2025 })
+    expect(mocked.trends).toHaveBeenCalledWith({ region_id: 'douala', start_year: 2001, end_year: LAST_YEAR })
     expect(mocked.trends).not.toHaveBeenCalledWith(expect.objectContaining({ region_id: 'bertoua' }))
   })
 
@@ -123,7 +123,7 @@ describe('Assistant', () => {
     const input = screen.getByRole('textbox', { name: /ask about the result/i })
     await userEvent.type(input, 'Is it getting wetter?{Enter}')
     expect(await screen.findByText('The satellite record shows a statistically significant decrease.')).toBeInTheDocument()
-    expect(mocked.ask).toHaveBeenCalledWith({ region_id: 'garoua', start_year: 2001, end_year: 2025, question: 'Is it getting wetter?', use_llm: false })
+    expect(mocked.ask).toHaveBeenCalledWith({ region_id: 'garoua', start_year: 2001, end_year: LAST_YEAR, question: 'Is it getting wetter?', use_llm: false })
 
     await userEvent.type(input, 'What about temperature?{Enter}')
     expect(await screen.findByText('I can only answer from the computed results.')).toBeInTheDocument()
