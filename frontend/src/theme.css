@@ -160,3 +160,37 @@ input:focus-visible, select:focus-visible { box-shadow: 0 0 0 4px var(--brand-so
 .skeleton { background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(111, 224, 180, 0.08), rgba(255, 255, 255, 0.03)); background-size: 200% 100%; }
 .table thead th { background: var(--surface-solid); }
 .qa-a { background: rgba(111, 224, 180, 0.06); }
+
+/* ---------------------------------------------------------------- region picker map */
+.controls-panel { display: grid; gap: 1.25rem; align-items: center; }
+.controls-panel-form h2 { font-size: var(--fs-2xl); margin-bottom: 0.4rem; }
+.controls-panel-form .controls { margin-top: 1rem; grid-template-columns: 1fr 1fr; }
+.controls-panel-form .controls .field-region { grid-column: 1 / -1; }
+@media (min-width: 760px) {
+  .controls-panel { grid-template-columns: minmax(260px, 380px) minmax(0, 1fr); padding: 1.5rem 2rem; gap: 2.5rem; }
+}
+.picker { margin: 0; }
+.picker-map { width: 100%; height: auto; display: block; max-height: 520px; overflow: visible; }
+.picker-land, .picker-admin { fill: rgba(111, 224, 180, 0.08); stroke: rgba(170, 245, 215, 0.5); stroke-width: 1.2; stroke-linejoin: round; }
+.picker-admin { stroke-width: 0.8; }
+.pin { cursor: pointer; outline: none; --pin: var(--text-3); }
+.pin-wetter { --pin: var(--wetter); }
+.pin-drier { --pin: var(--drier); }
+.pin-neutral { --pin: var(--neutral); }
+.pin-hit { fill: transparent; }
+.pin-ring { fill: rgba(4, 17, 13, 0.85); stroke: var(--pin); stroke-width: 2; transition: r 0.25s var(--ease); }
+.pin-dot { fill: var(--pin); }
+.pin-label { fill: var(--text-2); font-size: 13px; font-weight: 600; paint-order: stroke; stroke: rgba(4, 17, 13, 0.9); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.pin:hover .pin-ring, .pin:focus-visible .pin-ring { r: 10; stroke-width: 2.5; }
+.pin:hover .pin-label, .pin:focus-visible .pin-label { fill: var(--text); }
+.pin:focus-visible .pin-ring { stroke: var(--focus); }
+.pin-current { cursor: default; }
+.pin-current .pin-ring { stroke: #f3d27a; stroke-width: 2.5; }
+.pin-current .pin-label { fill: #fff6c9; font-size: 15px; font-weight: 700; }
+.pin-halo { fill: rgba(243, 210, 122, 0.55); animation: breathe 2.6s ease-in-out infinite; }
+.pin-empty { cursor: not-allowed; opacity: 0.5; }
+.picker-key { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin-top: 0.6rem; font-size: var(--fs-xs); color: var(--text-2); }
+.picker-key span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sw-pin { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--pin); background: rgba(4, 17, 13, 0.85); display: inline-block; }
+.pin-current-key { --pin: #f3d27a; }
+@media (prefers-reduced-motion: reduce) { .pin-halo { animation: none; } }

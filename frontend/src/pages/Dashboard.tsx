@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AnnualChart } from '../components/charts/AnnualChart'
 import { Card } from '../components/common/Card'
 import { IconChart, IconChat, IconMap } from '../components/common/Icons'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
 import { AnswerCard } from '../components/dashboard/AnswerCard'
+import { RegionPicker } from '../components/maps/RegionPicker'
 import { Hero } from '../components/dashboard/Hero'
 import { InvestigationControls } from '../components/dashboard/InvestigationControls'
 import { CaveatList } from '../components/dashboard/CaveatList'
@@ -14,7 +16,11 @@ import { api } from '../services/api'
 
 export default function Dashboard() {
   const { request, region } = useInvestigation()
-  const { search } = useLocation()
+  const { search, hash } = useLocation()
+  // A link to /#answer opens straight on the region picker.
+  useEffect(() => {
+    if (hash === '#answer') document.getElementById('answer')?.scrollIntoView({ block: 'start' })
+  }, [hash])
   const ok = periodIsValid(request)
   const key = [request.region_id, request.start_year, request.end_year]
   const trends = useApi(() => api.trends(request), key, ok)
@@ -25,8 +31,17 @@ export default function Dashboard() {
   return (
     <>
       <Hero />
-      <section id="answer" tabIndex={-1} className="controls-panel" aria-label="Region and period">
-        <InvestigationControls />
+      <section id="answer" tabIndex={-1} className="controls-panel" aria-labelledby="choose-title">
+        <div className="controls-panel-map">
+          <RegionPicker />
+        </div>
+        <div className="controls-panel-form">
+          <h2 id="choose-title">Choose a region</h2>
+          <p className="muted">
+            Select a city on the map, or use the menus. Each region is a box of satellite cells around its regional capital.
+          </p>
+          <InvestigationControls />
+        </div>
       </section>
       {!ok ? (
         <PeriodProblem />

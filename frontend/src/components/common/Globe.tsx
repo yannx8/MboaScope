@@ -22,7 +22,7 @@ const EUROPE: LonLat[] = [
   [-9, 37], [-9, 43.5], [-1.5, 43.5], [-4.5, 48.5], [2, 51], [8, 54], [10, 57.5], [12, 54.5], [21, 55], [28, 60],
   [30, 50], [36, 47], [28, 41], [26, 38], [23, 36.5], [20, 40], [16, 38], [12, 44.5], [8, 44], [3, 43], [-2, 36.8], [-9, 37],
 ]
-const CAMEROON: LonLat[] = [
+export const CAMEROON_OUTLINE: LonLat[] = [
   [8.5, 4.6], [9.6, 3.8], [9.8, 2.3], [11.3, 2.2], [13.3, 2.2], [15, 2], [16.2, 2.2], [16, 3.5], [15.1, 4.3],
   [14.6, 5.4], [14.5, 6.2], [15.3, 7.5], [14.9, 8.8], [15.6, 9.9], [14, 10], [15.1, 10.9], [14.9, 12.1],
   [14.2, 13], [14, 12.5], [13.6, 11], [12.8, 8.7], [12.2, 8.2], [11.8, 7], [11, 6.5], [10.6, 7], [9.6, 6.5], [8.8, 5.6],
@@ -162,7 +162,7 @@ export function Globe({
         <path d={linePath(EUROPE, lon0, lat0, true)} className="land" />
         <path d={linePath(ARABIA, lon0, lat0, true)} className="land" />
         <path d={linePath(AFRICA, lon0, lat0, true)} className="land" />
-        <path d={linePath(CAMEROON, lon0, lat0, true)} className="land-home" filter="url(#g-glow)" />
+        <path d={linePath(CAMEROON_OUTLINE, lon0, lat0, true)} className="land-home" filter="url(#g-glow)" />
         {hub &&
           dots
             .filter((d) => d !== hub)

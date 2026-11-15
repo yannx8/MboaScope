@@ -59,6 +59,20 @@ describe('Dashboard', () => {
     expect(mocked.trends).not.toHaveBeenCalledWith(expect.objectContaining({ region_id: 'bertoua' }))
   })
 
+  it('lets the user pick a region on the map', async () => {
+    renderAt('/?region=garoua', <Dashboard />)
+    const map = await screen.findByRole('group', { name: /map of the study regions/i })
+    const douala = await within(map).findByRole('button', { name: /^Douala.*No significant trend/ })
+    expect(douala).toHaveAttribute('aria-pressed', 'false')
+    expect(within(map).getByRole('button', { name: /^Garoua/ })).toHaveAttribute('aria-pressed', 'true')
+    expect(within(map).getByRole('button', { name: /Bertoua: no data yet/ })).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(douala)
+    await waitFor(() => expect(within(map).getByRole('button', { name: /^Douala/ })).toHaveAttribute('aria-pressed', 'true'))
+    douala.focus()
+    await userEvent.click(within(map).getByRole('button', { name: /^Garoua/ }))
+    await waitFor(() => expect(within(map).getByRole('button', { name: /^Garoua/ })).toHaveAttribute('aria-pressed', 'true'))
+  })
+
   it('gives every chart a data table', async () => {
     renderAt('/?region=garoua', <Dashboard />)
     expect(await screen.findByText('Show the numbers')).toBeInTheDocument()
