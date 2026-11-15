@@ -243,3 +243,10 @@ input:focus-visible, select:focus-visible { box-shadow: 0 0 0 4px var(--brand-so
 .preset[aria-pressed='true'] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); box-shadow: 0 0 16px -6px var(--glow); }
 .preset[aria-pressed='true'] span { color: var(--text-2); }
 @media (min-width: 760px) { .controls-bar .presets { grid-column: auto; align-self: end; padding-bottom: 5px; } }
+
+/* ---------------------------------------------------------------- share bar */
+.share-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; position: relative; }
+.share-btn { min-height: 32px; padding: 0.2rem 0.75rem; border-radius: 999px; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); }
+.share-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+.share-status { flex-basis: 100%; text-align: right; font-size: var(--fs-xs); color: var(--brand); min-height: 1em; }
+.share-status:empty { display: none; }

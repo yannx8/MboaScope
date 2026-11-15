@@ -1,5 +1,7 @@
+import { useRef } from 'react'
 import { AnnualChart } from '../components/charts/AnnualChart'
 import { Term } from '../components/common/Term'
+import { ShareBar } from '../components/common/ShareBar'
 import { ClimatologyChart } from '../components/charts/ClimatologyChart'
 import { Card } from '../components/common/Card'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
@@ -11,6 +13,7 @@ import { BOX_NAME, num, pValue, signed, testName } from '../services/format'
 
 export default function Analysis() {
   const { request, regions } = useInvestigation()
+  const chartRef = useRef<HTMLDivElement>(null)
   const ok = periodIsValid(request)
   const key = [request.region_id, request.start_year, request.end_year]
   const trends = useApi(() => api.trends(request), key, ok)
@@ -28,8 +31,14 @@ export default function Analysis() {
   return (
     <div className="grid">
       <div className="span-12">
-        <Card title={`Annual rainfall, ${sd.region_name}`} subtitle={`${sd.box_label}. ${h.dataset}, ${h.period}.`}>
-          <AnnualChart years={sd.years} h={h} />
+        <Card
+          title={`Annual rainfall, ${sd.region_name}`}
+          subtitle={`${sd.box_label}. ${h.dataset}, ${h.period}.`}
+          action={<ShareBar series={sd} chart={chartRef} />}
+        >
+          <div ref={chartRef}>
+            <AnnualChart years={sd.years} h={h} />
+          </div>
           {sd.excluded_years.length > 0 && (
             <p className="note note-info">
               <span>Left out because months are missing (never filled in): {sd.excluded_years.join(', ')}.</span>

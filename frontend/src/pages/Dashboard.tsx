@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AnnualChart } from '../components/charts/AnnualChart'
 import { Card } from '../components/common/Card'
+import { ShareBar } from '../components/common/ShareBar'
 import { IconChart, IconChat, IconMap } from '../components/common/Icons'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
 import { AnswerCard } from '../components/dashboard/AnswerCard'
@@ -17,6 +18,7 @@ import { api } from '../services/api'
 export default function Dashboard() {
   const { request, region } = useInvestigation()
   const { search, hash } = useLocation()
+  const chartRef = useRef<HTMLDivElement>(null)
   // A link to /#answer opens straight on the region picker.
   useEffect(() => {
     if (hash === '#answer') document.getElementById('answer')?.scrollIntoView({ block: 'start' })
@@ -60,11 +62,18 @@ export default function Dashboard() {
       {h && !trends.loading && (
         <>
           <div className="span-8">
-            <Card fill title="Annual rainfall" subtitle={`${series.data?.box_label ?? 'Headline box'}, satellite estimate`}>
+            <Card
+              fill
+              title="Annual rainfall"
+              subtitle={`${series.data?.box_label ?? 'Headline box'}, satellite estimate`}
+              action={<ShareBar series={series.data} chart={chartRef} />}
+            >
               {series.error ? (
                 <ApiProblem status={series.status} message={series.error} onRetry={series.reload} />
               ) : series.data ? (
-                <AnnualChart years={series.data.years} h={h} height={270} />
+                <div ref={chartRef}>
+                  <AnnualChart years={series.data.years} h={h} height={270} />
+                </div>
               ) : (
                 <Skeleton kind="chart" label="Loading the annual totals…" />
               )}
