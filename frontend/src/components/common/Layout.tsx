@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useInvestigation } from '../../hooks/useInvestigation'
 import { InvestigationControls } from '../dashboard/InvestigationControls'
+import { Backdrop } from './Backdrop'
 import { IconBook, IconChart, IconChat, IconHome, IconMap } from './Icons'
 import { MockBanner } from './MockBanner'
 
@@ -53,6 +54,7 @@ export function Layout() {
 
   return (
     <>
+      <Backdrop />
       <a className="skip" href="#main">
         Skip to content
       </a>
@@ -70,16 +72,21 @@ export function Layout() {
               </NavLink>
             ))}
           </nav>
+          <span className="topbar-chip" aria-live="polite">
+            <span className="live-dot" aria-hidden="true" />
+            {region?.name ?? 'Cameroon'}
+          </span>
         </div>
       </header>
-      {pathname !== '/method' && (
+      {/* The dashboard shows the controls under its hero instead. */}
+      {pathname !== '/method' && pathname !== '/' && (
         <div className="controls-bar">
           <div className="container">
             <InvestigationControls />
           </div>
         </div>
       )}
-      <main id="main" ref={main} tabIndex={-1} className="container page" style={{ outline: 'none' }}>
+      <main id="main" ref={main} tabIndex={-1} className={`container page${pathname === '/' ? ' page-home' : ''}`} style={{ outline: 'none' }}>
         <Outlet />
       </main>
       <footer className="footer">

@@ -4,6 +4,8 @@ import { Card } from '../components/common/Card'
 import { IconChart, IconChat, IconMap } from '../components/common/Icons'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
 import { AnswerCard } from '../components/dashboard/AnswerCard'
+import { Hero } from '../components/dashboard/Hero'
+import { InvestigationControls } from '../components/dashboard/InvestigationControls'
 import { CaveatList } from '../components/dashboard/CaveatList'
 import { RegionComparison } from '../components/dashboard/RegionComparison'
 import { useApi } from '../hooks/useApi'
@@ -18,10 +20,17 @@ export default function Dashboard() {
   const trends = useApi(() => api.trends(request), key, ok)
   const series = useApi(() => api.rainfallSeries(request), key, ok)
 
-  if (!ok) return <PeriodProblem />
   const h = trends.data?.headline
 
   return (
+    <>
+      <Hero />
+      <section id="answer" tabIndex={-1} className="controls-panel" aria-label="Region and period">
+        <InvestigationControls />
+      </section>
+      {!ok ? (
+        <PeriodProblem />
+      ) : (
     <div className="grid">
       <div className="span-12">
         {trends.error ? (
@@ -84,5 +93,7 @@ export default function Dashboard() {
         </Link>
       </div>
     </div>
+      )}
+    </>
   )
 }
