@@ -13,7 +13,7 @@ import { api } from '../services/api'
 import { BOX_NAME, num, pValue, signed, testName } from '../services/format'
 
 export default function Analysis() {
-  const { request, regions } = useInvestigation()
+  const { request } = useInvestigation()
   const chartRef = useRef<HTMLDivElement>(null)
   const ok = periodIsValid(request)
   const key = [request.region_id, request.start_year, request.end_year]
