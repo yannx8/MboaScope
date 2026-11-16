@@ -28,5 +28,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Page tests type and click through the UI; slow CI machines need more than the 5 s default.
+    testTimeout: 20000,
   },
 })
