@@ -1,4 +1,4 @@
-"""AI interpretation. Owner: Developer B."""
+"""AI interpretation and questions. Owner: Developer B."""
 from __future__ import annotations
 
 from typing import Literal
@@ -35,3 +35,22 @@ class InterpretResponse(Envelope):
     explanation: Explanation
     notes: list[str]  # why Gemini was not used, if it was requested
     suggestions: list[Suggestion]
+
+
+class AskRequest(InvestigationRequest):
+    question: str = Field(min_length=2, max_length=300, examples=["Is it getting wetter?"])
+    use_llm: bool = Field(False, description="Let Gemini answer. Falls back to fixed rules, then to a refusal.")
+
+
+class Answer(BaseModel):
+    source: Literal["rules", "gemini", "refusal"]
+    model: str | None
+    answered: bool
+    text: str
+
+
+class AskResponse(Envelope):
+    region_id: str
+    question: str
+    answer: Answer
+    notes: list[str]  # why Gemini or a rule was not used

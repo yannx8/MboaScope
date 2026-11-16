@@ -29,6 +29,7 @@ Interactive docs while the server runs: http://127.0.0.1:8000/docs
 | `POST /api/analysis/spatial` | Exploratory per-cell trends on the 9 x 9 grid | A |
 | `GET /api/analysis/history?limit=20` | Recent investigations | A |
 | `POST /api/ai/interpret` | Checked plain-language explanation and suggested next investigations | B |
+| `POST /api/ai/ask` | Checked answer to one free-text question about the current result | B |
 
 ### `GET /api/regions`
 
@@ -117,6 +118,27 @@ Body: the investigation plus `"use_llm": false | true`.
   and `notes` says why.
 - If `checks_passed` is false the frontend must hide the text.
 - A suggestion with `region_id: null` means "let the user pick a region".
+- With `use_llm`, a rewrite that passed every check is cached in SQLite (region, period, hash of the
+  analysis), so the second request returns it at once. Stored texts are checked again on every read.
+
+### `POST /api/ai/ask`
+
+Body: the investigation plus `"question"` (2 to 300 characters) and `"use_llm": false | true`.
+Never cached by the frontend.
+
+```json
+{"api_version": "2.0", "generated_at": "...", "is_mock": true, "region_id": "garoua",
+ "question": "Is it getting wetter?",
+ "answer": {"source": "rules", "model": null, "answered": true, "text": "..."},
+ "notes": []}
+```
+
+- `source` is `gemini` when the model answer passed the number, claim, direction and length checks,
+  `rules` when a fixed answer was built from the analysis, `refusal` otherwise.
+- A refusal always has `answered: false` and the text "I can only answer from the computed results."
+- Questions outside the analysis (temperature, floods, weather) are refused without calling a model.
+  A question naming another region gets a pointer to the region menu.
+- `notes` says why Gemini or a rule was not used. A question that is too short or too long returns 422.
 
 ## Storage (backend internal, not part of the contract)
 

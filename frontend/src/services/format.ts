@@ -31,3 +31,39 @@ export const CAVEAT_TITLE: Record<string, string> = {
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export const SENSOR_CHANGE_YEAR = 2014
+
+/** The primary p-value, as the contract defines it (docs/api.md). A lookup, not a computation. */
+export const primaryP = (h: { mk_test_used: 'original' | 'hamed_rao'; mk_original: { p: number }; mk_hamed_rao: { p: number } }): number =>
+  h.mk_test_used === 'hamed_rao' ? h.mk_hamed_rao.p : h.mk_original.p
+
+export const testName = (used: 'original' | 'hamed_rao'): string =>
+  used === 'hamed_rao' ? 'Modified Mann-Kendall (Hamed-Rao)' : 'Mann-Kendall'
+
+export const VERDICT_SHORT: Record<Verdict, string> = {
+  significant_increase: 'Significant increase',
+  significant_decrease: 'Significant decrease',
+  no_significant_trend: 'No significant trend',
+}
+
+/** One plain sentence for the answer card. Words only; the numbers sit next to it. */
+export const VERDICT_PLAIN: Record<Verdict, string> = {
+  significant_increase: 'The satellite record shows annual rainfall going up, and the rise is unlikely to be chance alone.',
+  significant_decrease: 'The satellite record shows annual rainfall going down, and the fall is unlikely to be chance alone.',
+  no_significant_trend:
+    'The record cannot separate a steady rise or fall from ordinary year-to-year ups and downs. This is not the same as "no change".',
+}
+
+export const CAVEAT_TEXT: Record<string, string> = {
+  sensor_change_2014: 'The satellites changed from TRMM to GPM in 2014. A step there can look like a trend.',
+  coastal_skill: 'NASA reports lower satellite accuracy near the coast.',
+  short_record: 'About 25 yearly values give the tests little power to detect a small change.',
+  area_estimate: 'A satellite average over a box of about 33 km, not a reading at one point.',
+}
+
+export const BOX_NAME: Record<string, string> = {
+  box_1x1: '1 x 1 cell (about 11 km)',
+  box_3x3: '3 x 3 cells (about 33 km, headline)',
+  box_5x5: '5 x 5 cells (about 55 km)',
+}
+
+export const periodLabel = (start: number, end: number): string => `${start} to ${end}`

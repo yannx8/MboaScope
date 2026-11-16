@@ -1,18 +1,25 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 
-export function Card({ title, subtitle, children, action, id }: {
+export function Card({
+  title,
+  subtitle,
+  children,
+  action,
+  fill = false,
+}: {
   title?: string
   subtitle?: ReactNode
   children: ReactNode
   action?: ReactNode
-  id?: string
+  fill?: boolean
 }) {
+  const id = useId()
   return (
-    <section className="card" id={id} aria-labelledby={id && title ? `${id}-title` : undefined}>
+    <section className={`card${fill ? ' card-fill' : ''}`} aria-labelledby={title ? id : undefined}>
       {(title || action) && (
         <header className="card-head">
           <div>
-            {title && <h2 id={id ? `${id}-title` : undefined}>{title}</h2>}
+            {title && <h2 id={id}>{title}</h2>}
             {subtitle && <p className="card-sub">{subtitle}</p>}
           </div>
           {action}

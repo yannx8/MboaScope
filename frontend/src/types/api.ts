@@ -177,3 +177,23 @@ export interface InterpretResponse extends Envelope {
   notes: string[]
   suggestions: Suggestion[]
 }
+
+// New: free-text question (task B9). See docs/api.md, POST /api/ai/ask.
+export interface AskRequest extends InvestigationRequest {
+  question: string
+  use_llm?: boolean
+}
+
+export interface Answer {
+  source: 'rules' | 'gemini' | 'refusal'
+  model: string | null
+  answered: boolean
+  text: string
+}
+
+export interface AskResponse extends Envelope {
+  region_id: string
+  question: string
+  answer: Answer
+  notes: string[]
+}

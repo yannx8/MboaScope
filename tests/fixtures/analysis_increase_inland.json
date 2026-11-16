@@ -1,0 +1,74 @@
+{
+  "contract_version": "1.0",
+  "generated_at": "2026-11-15T00:00:00Z",
+  "is_mock": true,
+  "headline": {
+    "region_id": "garoua",
+    "region_name": "Garoua",
+    "box": "box_3x3",
+    "dataset": "IMERG V07",
+    "period": "2001-2025",
+    "n_years": 25,
+    "alpha": 0.05,
+    "mean_annual_mm": 3724,
+    "lag1_autocorr": 0.23,
+    "autocorr_significant": false,
+    "mk_test_used": "original",
+    "mk_original": {
+      "tau": 0.38,
+      "z": 2.65,
+      "p": 0.008,
+      "trend": "increasing"
+    },
+    "mk_hamed_rao": {
+      "z": 2.54,
+      "p": 0.011,
+      "trend": "increasing"
+    },
+    "sen_slope_mm_per_year": 31.2,
+    "sen_intercept_mm": 3350,
+    "sen_ci95": [
+      9.8,
+      52.6
+    ],
+    "pct_per_decade": 8.4,
+    "pettitt": {
+      "change_year": 2009,
+      "k": 62,
+      "p": 0.412,
+      "significant": false
+    },
+    "verdict": "significant_increase",
+    "caveats": [
+      "sensor_change_2014",
+      "short_record",
+      "area_estimate"
+    ]
+  },
+  "sensitivity": [
+    {
+      "box": "box_1x1",
+      "dataset": "IMERG V07",
+      "n_years": 25,
+      "p": 0.097,
+      "sen_slope_mm_per_year": 20.5,
+      "sen_ci95": [
+        -2.7,
+        44.3
+      ],
+      "verdict": "no_significant_trend"
+    },
+    {
+      "box": "box_5x5",
+      "dataset": "IMERG V07",
+      "n_years": 25,
+      "p": 0.199,
+      "sen_slope_mm_per_year": 13.7,
+      "sen_ci95": [
+        -3.4,
+        36.8
+      ],
+      "verdict": "no_significant_trend"
+    }
+  ]
+}

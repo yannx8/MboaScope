@@ -30,9 +30,9 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
   const regions = useApi(() => api.regions(), [])
 
   const request: InvestigationRequest = {
-    region_id: params.get('region') ?? DEFAULT_REGION,
-    start_year: Number(params.get('from') ?? FIRST_YEAR),
-    end_year: Number(params.get('to') ?? LAST_YEAR),
+    region_id: params.get('region') || DEFAULT_REGION,
+    start_year: yearParam(params.get('from'), FIRST_YEAR),
+    end_year: yearParam(params.get('to'), LAST_YEAR),
   }
 
   const value = useMemo<InvestigationContextValue>(() => {
@@ -54,7 +54,7 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [regions.data, regions.error, request.region_id, request.start_year, request.end_year, location.pathname])
+  }, [regions.data, regions.error, request.region_id, request.start_year, request.end_year, location.pathname, location.search])
 
   return <InvestigationContext.Provider value={value}>{children}</InvestigationContext.Provider>
 }
@@ -63,6 +63,13 @@ export function useInvestigation(): InvestigationContextValue {
   const ctx = useContext(InvestigationContext)
   if (!ctx) throw new Error('useInvestigation must be used inside <InvestigationProvider>')
   return ctx
+}
+
+/** A year from the URL, kept inside the data range. A typed or broken value falls back. */
+export function yearParam(raw: string | null, fallback: number): number {
+  const n = raw === null || raw.trim() === '' ? NaN : Number(raw)
+  if (!Number.isInteger(n)) return fallback
+  return Math.min(LAST_YEAR, Math.max(FIRST_YEAR, n))
 }
 
 /** True when the period is long enough for the backend to accept it. */

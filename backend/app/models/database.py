@@ -6,6 +6,7 @@ Four tables, nothing more (see docs/architecture.md):
 - box_observations  area-averaged monthly rates from Giovanni (plan B)
 - sources           one row per region: how its data arrived (the run switch)
 - investigations    a log of every trend investigation the API has run
+- ai_explanations   Gemini rewrites that passed every check (cache, task B8, owner B)
 """
 from __future__ import annotations
 
@@ -58,6 +59,15 @@ CREATE TABLE IF NOT EXISTS investigations (
     sen_slope_mm_per_year REAL NOT NULL,
     is_mock               INTEGER NOT NULL,
     created_at            TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS ai_explanations (
+    region_id     TEXT NOT NULL,
+    start_year    INTEGER NOT NULL,
+    end_year      INTEGER NOT NULL,
+    analysis_hash TEXT NOT NULL,      -- sha256 of the analysis without generated_at
+    payload       TEXT NOT NULL,      -- JSON explanation, source gemini
+    created_at    TEXT NOT NULL,
+    PRIMARY KEY (region_id, start_year, end_year, analysis_hash)
 );
 """
 
@@ -189,6 +199,38 @@ def recent_investigations(limit: int = 20, db_path: Path | None = None) -> list[
     with connect(db_path) as conn:
         rows = conn.execute("SELECT * FROM investigations ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
     return [{**dict(r), "is_mock": bool(r["is_mock"])} for r in rows]
+
+
+# ------------------------------------------------------------------ AI cache (task B8, owner B)
+def save_ai_explanation(
+    region_id: str, start_year: int, end_year: int, analysis_hash: str, payload: dict[str, Any], db_path: Path | None = None
+) -> None:
+    with connect(db_path) as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO ai_explanations VALUES (?, ?, ?, ?, ?, ?)",
+            (region_id, start_year, end_year, analysis_hash, json.dumps(payload, ensure_ascii=False), now_utc()),
+        )
+
+
+def get_ai_explanation(
+    region_id: str, start_year: int, end_year: int, analysis_hash: str, db_path: Path | None = None
+) -> dict[str, Any] | None:
+    with connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT payload FROM ai_explanations WHERE region_id = ? AND start_year = ? AND end_year = ? AND analysis_hash = ?",
+            (region_id, start_year, end_year, analysis_hash),
+        ).fetchone()
+    return json.loads(row["payload"]) if row else None
+
+
+def delete_ai_explanation(
+    region_id: str, start_year: int, end_year: int, analysis_hash: str, db_path: Path | None = None
+) -> None:
+    with connect(db_path) as conn:
+        conn.execute(
+            "DELETE FROM ai_explanations WHERE region_id = ? AND start_year = ? AND end_year = ? AND analysis_hash = ?",
+            (region_id, start_year, end_year, analysis_hash),
+        )
 
 
 # ------------------------------------------------------------------ ship the data (task A5)
