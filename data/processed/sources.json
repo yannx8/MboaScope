@@ -1,0 +1,122 @@
+[
+  {
+    "region_id": "bafoussam",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "bamenda",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "bertoua",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "buea",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "douala",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "ebolowa",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  },
+  {
+    "region_id": "garoua",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:58Z"
+  },
+  {
+    "region_id": "maroua",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:58Z"
+  },
+  {
+    "region_id": "ngaoundere",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:58Z"
+  },
+  {
+    "region_id": "yaounde",
+    "access_method": "earthaccess",
+    "source_units": "mm/hr",
+    "period_start": "2001-01",
+    "period_end": "2024-12",
+    "granule_count": 288,
+    "notes": [
+      "GPM_3IMERGM v07 via earthaccess search, downloaded with an Earthdata token"
+    ],
+    "updated_at": "2026-11-15T22:20:57Z"
+  }
+]

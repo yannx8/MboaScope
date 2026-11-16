@@ -5,6 +5,8 @@
   fetch-imerg      [--region ID ...] [--limit N] [--download]   real per-cell data (plan A)
   import-giovanni  FILE --region ID [--activate]     Giovanni box CSV (plan B)
   status                                             what is in the database
+  export           [--to DIR]                        write the data to data/processed/ (committed)
+  load             [--from DIR]                      rebuild the database from those files
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from app.core.config import PROCESSED_DIR
 from app.models import database as db
 
 
@@ -40,6 +43,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--activate", action="store_true")
 
     sub.add_parser("status")
+
+    p = sub.add_parser("export")
+    p.add_argument("--to", type=Path, default=PROCESSED_DIR)
+
+    p = sub.add_parser("load")
+    p.add_argument("--from", dest="src", type=Path, default=PROCESSED_DIR)
     args = parser.parse_args(argv)
 
     # Load .env from the repository root before any command that needs
@@ -74,6 +83,14 @@ def main(argv: list[str] | None = None) -> int:
             print("status: database is empty. Run: python -m app.cli seed-mock")
         for rid, s in sorted(sources.items()):
             print(f"{rid:12s} {s['access_method']:13s} {s['period_start']}..{s['period_end']}  updated {s['updated_at']}")
+    elif args.cmd == "export":
+        counts = db.export_data(args.to)
+        print(f"export: {counts} written to {args.to}")
+        mock_regions = [r for r, s in db.all_sources().items() if s["access_method"] == "mock"]
+        if mock_regions:
+            print(f"export: warning, mock data (still flagged is_mock) for: {', '.join(sorted(mock_regions))}")
+    elif args.cmd == "load":
+        print(f"load: {db.load_data(args.src)} loaded from {args.src}")
     return 0
 
 
