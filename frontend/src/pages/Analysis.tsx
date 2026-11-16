@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { AnnualChart } from '../components/charts/AnnualChart'
 import { Term } from '../components/common/Term'
 import { ShareBar } from '../components/common/ShareBar'
+import { RecentInvestigations } from '../components/dashboard/RecentInvestigations'
 import { ClimatologyChart } from '../components/charts/ClimatologyChart'
 import { Card } from '../components/common/Card'
 import { ApiProblem, PeriodProblem, Skeleton } from '../components/common/Status'
@@ -18,7 +19,6 @@ export default function Analysis() {
   const key = [request.region_id, request.start_year, request.end_year]
   const trends = useApi(() => api.trends(request), key, ok)
   const series = useApi(() => api.rainfallSeries(request), key, ok)
-  const history = useApi(() => api.history(8), [trends.data?.investigation_id], !!trends.data)
 
   if (!ok) return <PeriodProblem />
   const failed = trends.error ? trends : series.error ? series : null
@@ -26,7 +26,6 @@ export default function Analysis() {
   if (!trends.data || !series.data) return <Skeleton kind="chart" label="Loading the analysis…" />
   const h = trends.data.headline
   const sd = series.data
-  const nameOf = (id: string) => regions.find((r) => r.id === id)?.name ?? id
 
   return (
     <div className="grid">
@@ -130,18 +129,8 @@ export default function Analysis() {
             <dt>Available</dt><dd>{sd.provenance.period.join(' to ')}</dd>
           </dl>
           {sd.provenance.notes.map((n) => <p key={n} className="small" style={{ marginTop: '0.6rem' }}>{n}</p>)}
-          {history.data && history.data.length > 0 && (
-            <>
-              <h3>Recent investigations</h3>
-              <ul className="small" style={{ paddingLeft: '1.1rem', margin: 0 }}>
-                {history.data.map((i) => (
-                  <li key={i.id}>
-                    {nameOf(i.region_id)}, {i.start_year} to {i.end_year}: <VerdictChip verdict={i.verdict} />
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+          <h3>Recent investigations</h3>
+          <RecentInvestigations refreshKey={trends.data?.investigation_id} limit={8} />
         </Card>
       </div>
     </div>

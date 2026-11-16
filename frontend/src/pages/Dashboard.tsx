@@ -10,6 +10,7 @@ import { RegionPicker } from '../components/maps/RegionPicker'
 import { Hero } from '../components/dashboard/Hero'
 import { InvestigationControls } from '../components/dashboard/InvestigationControls'
 import { CaveatList } from '../components/dashboard/CaveatList'
+import { RecentInvestigations } from '../components/dashboard/RecentInvestigations'
 import { RegionComparison } from '../components/dashboard/RegionComparison'
 import { useApi } from '../hooks/useApi'
 import { periodIsValid, useInvestigation } from '../hooks/useInvestigation'
@@ -96,6 +97,12 @@ export default function Dashboard() {
           subtitle="The same test for every regional capital. Choose a name to open it."
         >
           <RegionComparison />
+        </Card>
+      </div>
+
+      <div className="span-12">
+        <Card title="Recent investigations" subtitle="Run on this server, newest first. Choose one to open it again.">
+          <RecentInvestigations refreshKey={trends.data?.investigation_id} />
         </Card>
       </div>
 

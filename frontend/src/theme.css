@@ -250,3 +250,21 @@ input:focus-visible, select:focus-visible { box-shadow: 0 0 0 4px var(--brand-so
 .share-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
 .share-status { flex-basis: 100%; text-align: right; font-size: var(--fs-xs); color: var(--brand); min-height: 1em; }
 .share-status:empty { display: none; }
+
+/* ---------------------------------------------------------------- recent investigations */
+.recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.recent li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.2rem 0.75rem; align-items: center; padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid transparent; transition: border-color 0.2s, background 0.2s; }
+.recent li:hover { border-color: var(--border-strong); }
+.recent li.current { border-color: var(--brand); background: var(--brand-soft); }
+.recent-open { all: unset; cursor: pointer; display: flex; flex-wrap: wrap; gap: 0.15rem 0.6rem; align-items: baseline; min-width: 0; }
+.recent-open:disabled { cursor: default; }
+.recent-open:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+.recent-open strong { color: var(--text); }
+.recent-open span { color: var(--text-2); font-size: var(--fs-sm); }
+.recent-open:hover:not(:disabled) strong { color: var(--brand); }
+.recent-meta { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--text-3); }
+@media (min-width: 760px) {
+  .recent li { grid-template-columns: minmax(0, 1fr) auto 9rem; }
+  .recent-meta { grid-column: auto; text-align: right; }
+}

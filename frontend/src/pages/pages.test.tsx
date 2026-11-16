@@ -38,6 +38,7 @@ beforeEach(() => {
   )
   mocked.rainfallSeries.mockResolvedValue(SERIES)
   mocked.interpret.mockResolvedValue(INTERPRET)
+  mocked.history.mockResolvedValue([])
 })
 
 describe('Dashboard', () => {
